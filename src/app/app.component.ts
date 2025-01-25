@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
+  imports: [ReservationListComponent],
+  template: `<app-reservation-list></app-reservation-list>`,
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'candybar-frontend';
+
 }
