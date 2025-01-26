@@ -10,15 +10,13 @@ import { Reservation } from "../models/reservation.model";
 export class ReservationService {
   private apiUrl = 'http://localhost:8080/reservations';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getReservations(): Observable<Reservation[]> {
-    return this.http.get<Reservation[]>(this.apiUrl).pipe(
-      map(reservations => reservations.filter(reservation => !reservation.deleted))
-    );
+  getAllReservations(): Observable<Reservation[]> {
+    return this.http.get<Reservation[]>(this.apiUrl);
   }
-  createReservation(reservation: Reservation): Observable<Reservation> {
-    return this.http.post<Reservation>(this.apiUrl, reservation);
+  createReservation(reservation: Reservation): Observable<any> {
+    return this.http.post(this.apiUrl, reservation);
   }
 
   updateReservation(id: number, reservation: Reservation): Observable<Reservation> {
@@ -27,5 +25,9 @@ export class ReservationService {
 
   deleteReservation(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  recoverReservation(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/recover/${id}`, {});
   }
 }

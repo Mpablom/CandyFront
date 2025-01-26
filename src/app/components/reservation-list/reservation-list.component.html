@@ -1,37 +1,33 @@
-<div class="tittle">
-  <h1>Reservas</h1>
+<div class="title">
+  <h2>Reservas</h2>
+</div>
+<div class="close-button-container">
+  <button mat-icon-button class="close-button" (click)="goToHome()">
+    <mat-icon>close</mat-icon>
+  </button>
 </div>
 <div class="tab-container">
   <table mat-table [dataSource]="reservations" class="mat-elevation-z8">
-
-
-    <!-- Columna Fecha -->
     <ng-container matColumnDef="reservationDate">
       <th mat-header-cell *matHeaderCellDef>Fecha</th>
       <td mat-cell *matCellDef="let reservation">{{ reservation.reservationDate }}</td>
     </ng-container>
-
-    <!-- Columna Depósito -->
     <ng-container matColumnDef="deposit">
       <th mat-header-cell *matHeaderCellDef>Depósito</th>
       <td mat-cell *matCellDef="let reservation">{{ reservation.deposit }}</td>
     </ng-container>
-
-    <!-- Columna Nombre del Cliente -->
     <ng-container matColumnDef="customerName">
       <th mat-header-cell *matHeaderCellDef>Nombre</th>
       <td mat-cell *matCellDef="let reservation">
-        {{ reservation.customer.firstName }} {{ reservation.customer.lastName }}
+        {{ getCustomerName(reservation.customer.id) }}
       </td>
     </ng-container>
-
-    <!-- Columna Teléfono del Cliente -->
     <ng-container matColumnDef="customerPhone">
       <th mat-header-cell *matHeaderCellDef>Teléfono</th>
-      <td mat-cell *matCellDef="let reservation">{{ reservation.customer.phone }}</td>
+      <td mat-cell *matCellDef="let reservation">
+        {{ getCustomerPhone(reservation.customer.id) }}
+      </td>
     </ng-container>
-
-    <!-- Columna Acciones -->
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Acciones</th>
       <td mat-cell *matCellDef="let reservation">
@@ -42,10 +38,42 @@
       </td>
     </ng-container>
 
-    <!-- Filas -->
     <tr mat-header-row *matHeaderRowDef="['reservationDate', 'deposit','customerName', 'customerPhone', 'actions']">
     </tr>
     <tr mat-row
       *matRowDef="let row; columns: ['reservationDate', 'deposit','customerName', 'customerPhone', 'actions'];"></tr>
+  </table>
+</div>
+
+<div class="restore-button-container">
+  <button mat-flat-button color="primary" (click)="toggleDeletedReservations()">
+    {{ showDeletedReservations ? 'Ocultar Reservas Eliminadas' : 'Restaurar Reserva' }}
+  </button>
+</div>
+<div *ngIf="showDeletedReservations" class="deleted-reservations-container">
+  <table mat-table [dataSource]="deletedReservations" class="mat-elevation-z8">
+    <ng-container matColumnDef="reservationDate">
+      <th mat-header-cell *matHeaderCellDef>Fecha</th>
+      <td mat-cell *matCellDef="let reservation">{{ reservation.reservationDate }}</td>
+    </ng-container>
+    <ng-container matColumnDef="deposit">
+      <th mat-header-cell *matHeaderCellDef>Depósito</th>
+      <td mat-cell *matCellDef="let reservation">{{ reservation.deposit }}</td>
+    </ng-container>
+    <ng-container matColumnDef="customerName">
+      <th mat-header-cell *matHeaderCellDef>Nombre</th>
+      <td mat-cell *matCellDef="let reservation">
+        {{ getCustomerName(reservation.customer.id) }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let reservation">
+        <button mat-flat-button color="primary" (click)="recoverReservation(reservation.id)">Recuperar</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['reservationDate', 'deposit', 'customerName', 'actions']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['reservationDate', 'deposit', 'customerName', 'actions'];"></tr>
   </table>
 </div>

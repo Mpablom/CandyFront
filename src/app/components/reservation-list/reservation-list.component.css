@@ -1,6 +1,24 @@
-.tittle{
+.title{
   display: flex;
   justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.close-button{
+  background-color: none;
+  color:  #ae2222 ;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+.close-button:hover {
+  background-color:  #c85d5d ;
+  color:  #e0e0e0;
+}
+.close-button-container{
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 9%;
 }
 .actions-container {
   display: flex;
@@ -12,4 +30,10 @@
   width: 80%;
   box-shadow: 0px 0px 20px 4px gray ;
   border-radius: 10px;
+}
+.restore-button-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0px;
 }

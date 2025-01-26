@@ -1,0 +1,50 @@
+<div class="title">
+  <h2>Nueva Reserva</h2>
+</div>
+<div class="close-button-container">
+  <button mat-icon-button class="close-button" (click)="goToHome()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="reservation-form-container">
+
+  <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="firstName">Nombre</label>
+      <input id="firstName" formControlName="firstName" type="text" placeholder="Nombre">
+      <div *ngIf="reservationForm.get('firstName')?.invalid && reservationForm.get('firstName')?.touched">
+        El nombre es requerido.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="lastName">Apellido</label>
+      <input id="lastName" formControlName="lastName" type="text" placeholder="Apellido">
+      <div *ngIf="reservationForm.get('lastName')?.invalid && reservationForm.get('lastName')?.touched">
+        El apellido es requerido.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="phone">Teléfono</label>
+      <input id="phone" formControlName="phone" type="text" placeholder="Teléfono">
+      <div *ngIf="reservationForm.get('phone')?.invalid && reservationForm.get('phone')?.touched">
+        El teléfono es requerido y debe tener 10 dígitos.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="reservationDate">Fecha de Reserva</label>
+      <input id="reservationDate" formControlName="reservationDate" type="date">
+      <div *ngIf="reservationForm.get('reservationDate')?.invalid && reservationForm.get('reservationDate')?.touched">
+        La fecha de reserva es requerida.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="deposit">Depósito</label>
+      <input id="deposit" formControlName="deposit" type="number" placeholder="Depósito">
+      <div *ngIf="reservationForm.get('deposit')?.invalid && reservationForm.get('deposit')?.touched">
+        El depósito es requerido y debe ser un número positivo.
+      </div>
+    </div>
+    <button mat-flat-button color="warn" class="button-save" type="submit" [disabled]="reservationForm.invalid">Guardar Reserva</button>
+  </form>
+</div>
