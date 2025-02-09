@@ -22,7 +22,7 @@ export class ReservationListComponent implements OnInit {
   customers: Customer[] = [];
   deletedReservations: Reservation[] = [];
   showDeletedReservations: boolean = false;
-  displayedColumns: string[] = ['reservationDate', 'deposit', 'customerName', 'customerPhone', 'actions'];
+  displayedColumns: string[] = ['reservationDate', 'deposit','location', 'customerName', 'customerPhone', 'actions'];
 
   constructor(
     private reservationService: ReservationService,

@@ -32,7 +32,8 @@ export class ReservationFormComponent {
       lastName: ['', Validators.required],
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       reservationDate: ['', Validators.required],
-      deposit: ['', [Validators.required, Validators.min(0)]]
+      deposit: ['', [Validators.required, Validators.min(0)]],
+      location: ['']
     });
   }
 
@@ -65,6 +66,7 @@ export class ReservationFormComponent {
         const reservation: Reservation = {
           reservationDate: formValue.reservationDate,
           deposit: formValue.deposit,
+          location: formValue.location,
           customerId: createdCustomer.id!
         };
 
