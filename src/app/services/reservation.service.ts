@@ -1,8 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { map } from 'rxjs/operators';
-import { Reservation } from "../models/reservation.model";
+import { Reservation, ReservationRequestDto, ReservationResponseDto } from "../models/reservation.model";
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +14,10 @@ export class ReservationService {
   getAllReservations(): Observable<Reservation[]> {
     return this.http.get<Reservation[]>(this.apiUrl);
   }
-  createReservation(reservation: Reservation): Observable<any> {
-    return this.http.post(this.apiUrl, reservation);
+  createReservation(reservation: ReservationRequestDto): Observable<ReservationResponseDto> {
+    return this.http.post<ReservationResponseDto>(`${this.apiUrl}`, reservation);
   }
+
 
   updateReservation(id: number, reservation: Reservation): Observable<Reservation> {
     return this.http.put<Reservation>(`${this.apiUrl}/${id}`, reservation);
@@ -29,5 +29,9 @@ export class ReservationService {
 
   recoverReservation(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/recover/${id}`, {});
+  }
+
+  deletePastReservationsAndCustomers(): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/past/all`);
   }
 }

@@ -1,11 +1,11 @@
 .reservation-form-container {
   width: 80%;
-  margin: 0 auto;
+  margin: auto 20px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
-  box-shadow: 0px 0px 20px 4px gray  ;
+  box-shadow: 0px 0px 20px 4px gray;
 }
 .title{
   display: flex;

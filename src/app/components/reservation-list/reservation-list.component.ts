@@ -9,11 +9,12 @@ import { Router } from "@angular/router";
 import { Customer } from "../../models/customer.model";
 import { CustomerService } from "../../services/customer.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-reservation-list',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule],
   templateUrl: './reservation-list.component.html',
   styleUrls: ['./reservation-list.component.css']
 })
@@ -22,7 +23,7 @@ export class ReservationListComponent implements OnInit {
   customers: Customer[] = [];
   deletedReservations: Reservation[] = [];
   showDeletedReservations: boolean = false;
-  displayedColumns: string[] = ['reservationDate', 'deposit','location', 'customerName', 'customerPhone', 'actions'];
+  displayedColumns: string[] = ['reservationDate', 'deposit', 'location', 'customerName', 'customerPhone', 'actions'];
 
   constructor(
     private reservationService: ReservationService,
@@ -37,7 +38,7 @@ export class ReservationListComponent implements OnInit {
   loadReservations(): void {
     this.reservationService.getAllReservations().subscribe({
       next: (data) => {
-        this.reservations = data.filter(reservation => !reservation.deleted);
+        this.reservations = data.filter(reservation => !reservation.deleted)
         this.deletedReservations = data.filter(reservation => reservation.deleted);
       },
       error: (error) => {
@@ -61,6 +62,7 @@ export class ReservationListComponent implements OnInit {
       }
     });
   }
+
   toggleDeletedReservations(): void {
     this.showDeletedReservations = !this.showDeletedReservations;
   }
@@ -71,7 +73,7 @@ export class ReservationListComponent implements OnInit {
         this.snackBar.open('Reserva recuperada correctamente.', 'Cerrar', {
           duration: 5000,
           panelClass: ['success-snackbar']
-  });
+        });
         this.loadReservations();
         this.showDeletedReservations = false;
       },
@@ -84,10 +86,9 @@ export class ReservationListComponent implements OnInit {
       }
     });
   }
-
   getCustomerName(customerId: number): string {
     const customer = this.customers.find(c => c.id === customerId);
-    return customer ? `${customer.firstName} ${customer.lastName}` : 'Cliente no encontrado';
+    return customer ? customer.firstName : 'Cliente no encontrado';
   }
 
   getCustomerPhone(customerId: number): string {
@@ -130,6 +131,25 @@ export class ReservationListComponent implements OnInit {
             panelClass: ['success-snackbar']
           });
         }
+      }
+    });
+  }
+  deletePastReservationsAndCustomers(): void {
+    this.reservationService.deletePastReservationsAndCustomers().subscribe({
+      next: (response:{ message: string }) => {
+        this.snackBar.open(response.message, 'Cerrar', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        this.loadReservations();
+        this.loadCustomers(); // Recarga la lista de clientes
+      },
+      error: (error) => {
+        console.error('Error eliminando reservas y clientes pasados:', error);
+        this.snackBar.open('Error al eliminar reservas y clientes pasados', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }

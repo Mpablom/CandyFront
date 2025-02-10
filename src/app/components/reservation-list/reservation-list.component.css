@@ -1,39 +1,124 @@
-.title{
+.title {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
+  padding: 0 15px;
 }
-.close-button{
-  background-color: none;
-  color:  #ae2222 ;
+
+.close-button {
+  background-color: transparent;
+  color: #ae2222;
   border: none;
   cursor: pointer;
-  margin-bottom: 2px;
+  transition: all 0.3s ease;
 }
+
 .close-button:hover {
-  background-color:  #c85d5d ;
-  color:  #e0e0e0;
+  background-color: #c85d5d;
+  color: #e0e0e0;
 }
-.close-button-container{
+
+.close-button-container {
   display: flex;
   justify-content: flex-end;
-  margin-right: 9%;
+  padding: 0 15px;
+  margin: 15px 0;
 }
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 30px;
+  margin: auto;
+
+}
+
+.reservation-card {
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reservation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.card-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.card-value {
+  color: #333;
+}
+
 .actions-container {
   display: flex;
   gap: 10px;
+  justify-content: flex-end;
+  padding: 10px;
 }
-.tab-container{
-  padding: 5px;
-  margin: auto;
-  width: 80%;
-  box-shadow: 0px 0px 20px 4px gray ;
-  border-radius: 10px;
-}
-.restore-button-container{
+
+.buttons-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin: 10px 0px;
+  gap: 20px;
+  padding: 0 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
 }
+
+.restore-button-container,
+.delete-past-button-container {
+  flex: 1;
+  max-width: 400px;
+}
+
+.mobile-only {
+  display: none;
+}
+@media (max-width: 768px) {
+  .card-row-group {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .card-row {
+    flex-wrap: wrap;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: inline-block;
+  }
+
+  .actions-container {
+    justify-content: flex-end;
+    padding: 0 8px 8px 0;
+  }
+}
+@media (max-width: 480px) {
+  .card-row {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .card-label::after {
+    content: ":";
+    margin-right: 5px;
+  }
+}
+

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReservationService } from '../../services/reservation.service';
 import { Router } from '@angular/router';
-import { Customer } from '../../models/customer.model';
-import { Reservation } from '../../models/reservation.model';
+import { Customer, CustomerRequestDto, CustomerResponseDto } from '../../models/customer.model';
+import { Reservation, ReservationRequestDto } from '../../models/reservation.model';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -55,34 +55,37 @@ export class ReservationFormComponent {
       return;
     }
 
-    const customer: Customer = {
+    const customerRequest: CustomerRequestDto = {
       firstName: formValue.firstName,
       lastName: formValue.lastName,
       phone: formValue.phone,
     };
 
-    this.customerService.createCustomer(customer).subscribe({
-      next: (createdCustomer: Customer) => {
-        const reservation: Reservation = {
-          reservationDate: formValue.reservationDate,
-          deposit: formValue.deposit,
-          location: formValue.location,
-          customerId: createdCustomer.id!
-        };
+    this.customerService.createCustomer(customerRequest).subscribe({
+      next: (customerResponse: Customer) => {
+        if (customerResponse.id) {
+          const reservationRequest: ReservationRequestDto = {
+            reservationDate: formValue.reservationDate,
+            deposit: formValue.deposit,
+            location: formValue.location,
+            customerId: customerResponse.id
+          };
 
-        this.reservationService.createReservation(reservation).subscribe({
-          next: (response: any) => {
-            console.log('Reservation created successfully:', response);
-            this.router.navigate(['/reservations']);
-          },
-          error: (error: any) => {
-            console.error('Error creating reservation:', error);
-            this.snackBar.open('Error al crear la reserva: ' + error.message, 'Cerrar', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
+          this.reservationService.createReservation(reservationRequest).subscribe({
+            next: () => {
+              this.router.navigate(['/reservations']);
+            },
+            error: (error: any) => {
+              console.error('Error creating reservation:', error);
+              this.snackBar.open('Error al crear la reserva: ' + error.message, 'Cerrar', {
+                duration: 5000,
+                panelClass: ['error-snackbar']
+              });
+            }
+          });
+
+        }
+
       },
       error: (error: any) => {
         console.error('Error creating customer:', error);
