@@ -1,103 +1,174 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReservationService } from '../../services/reservation.service';
-import { Router } from '@angular/router';
-import { Customer, CustomerRequestDto, CustomerResponseDto } from '../../models/customer.model';
-import { Reservation, ReservationRequestDto } from '../../models/reservation.model';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ReservationResponseDto } from '../../models/reservation.model';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { CustomerService } from '../../services/customer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { switchMap, take } from 'rxjs';
 
 @Component({
   selector: 'app-reservation-form',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './reservation-form.component.html',
-  styleUrl: './reservation-form.component.css'
+  styleUrls: ['./reservation-form.component.css']
 })
-export class ReservationFormComponent {
+export class ReservationFormComponent implements OnInit {
   reservationForm!: FormGroup;
+  isEditMode = false;
+  currentReservationId?: number;
 
   constructor(
     private fb: FormBuilder,
     private reservationService: ReservationService,
+    private route: ActivatedRoute,
     private router: Router,
-    private customerService: CustomerService,
     private snackBar: MatSnackBar
-  ) {
+  ) { }
+
+  ngOnInit(): void {
+    this.initializeForm();
+    this.checkEditMode();
+  }
+
+  initializeForm(): void {
     this.reservationForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       reservationDate: ['', Validators.required],
       deposit: ['', [Validators.required, Validators.min(0)]],
-      location: ['']
+      location: [''],
+      customerId: ['']
+    });
+  }
+
+  checkEditMode(): void {
+    this.route.params
+      .pipe(
+        switchMap(params => {
+          if (params['id']) {
+            this.isEditMode = true;
+            this.currentReservationId = +params['id'];
+            return this.reservationService.getReservationById(this.currentReservationId);
+          } else {
+            return [null];
+          }
+        }),
+        take(1)
+      )
+      .subscribe({
+        next: (reservation) => {
+          if (reservation) {
+            this.loadReservation(reservation);
+          }
+        },
+        error: (error) => {
+          this.showError('Error cargando la reserva: ' + error.message);
+        }
+      });
+  }
+
+  loadReservation(reservation: ReservationResponseDto): void {
+    const formattedDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
+    this.reservationForm.patchValue({
+      firstName: reservation.customer.firstName,
+      lastName: reservation.customer.lastName,
+      phone: reservation.customer.phone,
+      reservationDate: formattedDate,
+      deposit: reservation.deposit,
+      location: reservation.location,
+      customerId: reservation.customer.id
     });
   }
 
   onSubmit(): void {
-    if (this.reservationForm.invalid) {
-      return;
-    }
+    if (this.reservationForm.invalid) return;
 
     const formValue = this.reservationForm.value;
-
     const reservationDate = new Date(formValue.reservationDate);
-    const currentDate = new Date();
 
-    if (reservationDate < currentDate) {
-      this.snackBar.open('La fecha de reserva no puede ser menor que la fecha actual.', 'Cerrar', {
-        duration: 5000,
-        panelClass: ['error-snackbar']
-      });
+    if (reservationDate < new Date()) {
+      this.showError('La fecha de reserva no puede ser pasada');
       return;
     }
 
-    const customerRequest: CustomerRequestDto = {
-      firstName: formValue.firstName,
-      lastName: formValue.lastName,
-      phone: formValue.phone,
-    };
+    if (this.isEditMode && this.currentReservationId) {
+      this.updateReservation(formValue);
+    } else {
+      this.createReservation(formValue);
+    }
+  }
 
-    this.customerService.createCustomer(customerRequest).subscribe({
-      next: (customerResponse: Customer) => {
-        if (customerResponse.id) {
-          const reservationRequest: ReservationRequestDto = {
-            reservationDate: formValue.reservationDate,
-            deposit: formValue.deposit,
-            location: formValue.location,
-            customerId: customerResponse.id
-          };
+  createReservation(formValue: any): void {
+  const reservationRequest = {
+    reservationDate: formValue.reservationDate,
+    deposit: formValue.deposit,
+    location: formValue.location,
+    firstName: formValue.firstName,
+    lastName: formValue.lastName,
+    phone: formValue.phone,
+    deleted: false
+  };
 
-          this.reservationService.createReservation(reservationRequest).subscribe({
-            next: () => {
-              this.router.navigate(['/reservations']);
-            },
-            error: (error: any) => {
-              console.error('Error creating reservation:', error);
-              this.snackBar.open('Error al crear la reserva: ' + error.message, 'Cerrar', {
-                duration: 5000,
-                panelClass: ['error-snackbar']
-              });
-            }
-          });
+  this.reservationService.createReservation(reservationRequest).subscribe({
+    next: () => {
+      this.router.navigate(['/reservations']);
+      this.showSuccess('Reserva creada correctamente');
+    },
+    error: (error) => {
+      this.showError('Error al crear la reserva: ' + error.message);
+    }
+  });
+}
 
-        }
+updateReservation(formValue: any): void {
+  if (!this.currentReservationId) return;
 
-      },
-      error: (error: any) => {
-        console.error('Error creating customer:', error);
-        this.snackBar.open('Error al crear el cliente: ' + error.message, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
-      }
+  const updatedReservationRequest = {
+    reservationDate: formValue.reservationDate,
+    deposit: formValue.deposit,
+    location: formValue.location,
+    firstName: formValue.firstName,
+    lastName: formValue.lastName,
+    phone: formValue.phone,
+    deleted: false,
+  };
+
+  this.reservationService.updateReservation(this.currentReservationId, updatedReservationRequest).subscribe({
+    next: () => {
+      this.router.navigate(['/reservations']);
+      this.showSuccess('Reserva actualizada correctamente');
+    },
+    error: (error) => {
+      this.showError('Error al actualizar la reserva: ' + error.message);
+    }
+  });
+}
+
+  showSuccess(message: string): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 5000,
+      panelClass: ['success-snackbar']
     });
+  }
+
+  showError(message: string): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/reservations']);
   }
 
   goToHome(): void {
     this.router.navigate(['']);
   }
 }
+

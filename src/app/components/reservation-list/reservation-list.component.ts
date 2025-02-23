@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Reservation } from "../../models/reservation.model";
+import { Reservation, ReservationRequestDto } from "../../models/reservation.model";
 import { ReservationService } from "../../services/reservation.service";
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from "@angular/common";
@@ -10,6 +10,7 @@ import { Customer } from "../../models/customer.model";
 import { CustomerService } from "../../services/customer.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatCardModule } from '@angular/material/card';
+
 
 @Component({
   selector: 'app-reservation-list',
@@ -22,14 +23,15 @@ export class ReservationListComponent implements OnInit {
   reservations: Reservation[] = [];
   customers: Customer[] = [];
   deletedReservations: Reservation[] = [];
-  showDeletedReservations: boolean = false;
+  showDeletedReservations = false;
   displayedColumns: string[] = ['reservationDate', 'deposit', 'location', 'customerName', 'customerPhone', 'actions'];
 
   constructor(
     private reservationService: ReservationService,
-    private router: Router,
     private customerService: CustomerService,
-    private snackBar: MatSnackBar) { }
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) { }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -37,28 +39,26 @@ export class ReservationListComponent implements OnInit {
 
   loadReservations(): void {
     this.reservationService.getAllReservations().subscribe({
-      next: (data) => {
-        this.reservations = data.filter(reservation => !reservation.deleted)
+      next: (data: Reservation[]) => {
+        this.reservations = data.filter(reservation => !reservation.deleted);
         this.deletedReservations = data.filter(reservation => reservation.deleted);
       },
       error: (error) => {
         console.error('Error loading reservations:', error);
-        this.snackBar.open('Error al cargar las reservas.', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.showErrorSnackbar('Error al cargar las reservas.');
       }
     });
   }
 
   loadCustomers(): void {
     this.customerService.getCustomers().subscribe({
-      next: (data) => {
+      next: (data: Customer[]) => {
         this.customers = data;
         this.loadReservations();
       },
       error: (error) => {
         console.error('Error loading customers:', error);
+        this.showErrorSnackbar('Error al cargar los clientes.');
       }
     });
   }
@@ -67,37 +67,42 @@ export class ReservationListComponent implements OnInit {
     this.showDeletedReservations = !this.showDeletedReservations;
   }
 
+  createReservation(): void {
+    this.router.navigate(['/reservations/new']);
+  }
+
   recoverReservation(id: number): void {
     this.reservationService.recoverReservation(id).subscribe({
       next: () => {
-        this.snackBar.open('Reserva recuperada correctamente.', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['success-snackbar']
-        });
+        this.showSuccessSnackbar('Reserva recuperada correctamente.');
         this.loadReservations();
         this.showDeletedReservations = false;
       },
       error: (error) => {
         console.error('Error recovering reservation:', error);
-        this.snackBar.open('Error al recuperar la reserva.', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.showErrorSnackbar('Error al recuperar la reserva.');
       }
     });
   }
+
   getCustomerName(customerId: number): string {
     const customer = this.customers.find(c => c.id === customerId);
-    return customer ? customer.firstName : 'Cliente no encontrado';
+    return customer ? `${customer.firstName} ${customer.lastName}` : 'Cliente no encontrado';
   }
 
   getCustomerPhone(customerId: number): string {
     const customer = this.customers.find(c => c.id === customerId);
     return customer ? customer.phone : 'Teléfono no encontrado';
   }
+
   editReservation(reservation: Reservation): void {
-    console.log('Editar reserva:', reservation);
+    if (!reservation.customer?.id) {
+      this.showErrorSnackbar('Error: ID de cliente no definido.');
+      return;
+    }
+    this.router.navigate(['/reservations/edit', reservation.id]);
   }
+
   deleteReservation(id: number): void {
     this.reservationService.deleteReservation(id).subscribe({
       next: () => {
@@ -106,55 +111,45 @@ export class ReservationListComponent implements OnInit {
           this.reservations = this.reservations.filter(reservation => reservation.id !== id);
           this.deletedReservations.push(deletedReservation);
         }
-        this.snackBar.open('Reserva eliminada correctamente.', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['success-snackbar']
-        });
+        this.showSuccessSnackbar('Reserva eliminada correctamente.');
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error deleting reservation:', error);
-        if (error.status !== 204) {
-          this.snackBar.open('Error al eliminar la reserva.', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
-        } else {
-          const deletedReservation = this.reservations.find(reservation => reservation.id === id);
-
-          if (deletedReservation) {
-            this.reservations = this.reservations.filter(reservation => reservation.id !== id);
-            this.deletedReservations.push(deletedReservation);
-          }
-
-          this.snackBar.open('Reserva eliminada correctamente.', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['success-snackbar']
-          });
-        }
+        this.showErrorSnackbar('Error al eliminar la reserva.');
       }
     });
   }
+
   deletePastReservationsAndCustomers(): void {
     this.reservationService.deletePastReservationsAndCustomers().subscribe({
-      next: (response:{ message: string }) => {
-        this.snackBar.open(response.message, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['success-snackbar']
-        });
+      next: (response: { message: string }) => {
+        this.showSuccessSnackbar(response.message);
         this.loadReservations();
-        this.loadCustomers(); // Recarga la lista de clientes
+        this.loadCustomers();
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error eliminando reservas y clientes pasados:', error);
-        this.snackBar.open('Error al eliminar reservas y clientes pasados', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.showErrorSnackbar('Error al eliminar reservas y clientes pasados.');
       }
     });
   }
+
   goToHome(): void {
     this.router.navigate(['']);
   }
 
+  private showSuccessSnackbar(message: string): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 5000,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  private showErrorSnackbar(message: string): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
+  }
 }
+

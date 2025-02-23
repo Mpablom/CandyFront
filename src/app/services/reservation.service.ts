@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Reservation, ReservationRequestDto, ReservationResponseDto } from "../models/reservation.model";
+import { CustomerRequestDto } from "../models/customer.model";
 
 @Injectable({
   providedIn: 'root'
@@ -17,9 +18,7 @@ export class ReservationService {
   createReservation(reservation: ReservationRequestDto): Observable<ReservationResponseDto> {
     return this.http.post<ReservationResponseDto>(`${this.apiUrl}`, reservation);
   }
-
-
-  updateReservation(id: number, reservation: Reservation): Observable<Reservation> {
+  updateReservation(id: number, reservation: ReservationRequestDto): Observable<Reservation> {
     return this.http.put<Reservation>(`${this.apiUrl}/${id}`, reservation);
   }
 
@@ -33,5 +32,12 @@ export class ReservationService {
 
   deletePastReservationsAndCustomers(): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/past/all`);
+  }
+  getReservationById(id: number): Observable<ReservationResponseDto> {
+    return this.http.get<ReservationResponseDto>(`${this.apiUrl}/${id}`);
+  }
+  updateReservationWithCustomer(id: number, reservation: ReservationRequestDto, customer: CustomerRequestDto): Observable<Reservation> {
+    const payload = { ...reservation, customer };
+    return this.http.put<Reservation>(`${this.apiUrl}/${id}/with-customer`, payload);
   }
 }

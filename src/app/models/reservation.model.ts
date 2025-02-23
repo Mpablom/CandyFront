@@ -4,17 +4,21 @@ export interface Reservation {
   id: number;
   reservationDate: string;
   deposit: number;
-  location?:string;
+  location?: string;
+  customerId: number;
   customer: Customer;
   deleted?: boolean;
   expanded?: boolean;
 }
 
 export interface ReservationRequestDto {
-  reservationDate: Date;
+  reservationDate: string;
   deposit: number;
   location?: string;
-  customerId: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  deleted?: boolean;
 }
 export interface ReservationResponseDto {
   id: number;
