@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { Reservation, ReservationRequestDto } from "../../models/reservation.model";
+import { Component, HostBinding, Input, OnDestroy, OnInit } from "@angular/core";
+import { Reservation } from "../../models/reservation.model";
 import { ReservationService } from "../../services/reservation.service";
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from "@angular/common";
@@ -10,6 +10,8 @@ import { Customer } from "../../models/customer.model";
 import { CustomerService } from "../../services/customer.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatCardModule } from '@angular/material/card';
+import { animate, style, transition, trigger } from "@angular/animations";
+import { ReservationFormComponent } from "../reservation-form/reservation-form.component";
 
 
 @Component({
@@ -17,14 +19,39 @@ import { MatCardModule } from '@angular/material/card';
   standalone: true,
   imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule],
   templateUrl: './reservation-list.component.html',
-  styleUrls: ['./reservation-list.component.css']
+  styleUrls: ['./reservation-list.component.css'],
+  animations: [
+    trigger('cardTransition', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.5)' }),
+        animate('500ms cubic-bezier(0.25, 0.8, 0.25, 1)', style({ opacity: 1, transform: 'scale(1)' }))
+      ]),
+      transition(':leave', [
+        animate('500ms ease-in', style({ opacity: 0, transform: 'scale(0.5)' }))
+      ])
+    ]),
+    trigger('buttonsTransition', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-20px)' }),
+        animate('800ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('800ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' }))
+      ])
+    ])
+  ]
 })
-export class ReservationListComponent implements OnInit {
+export class ReservationListComponent implements OnInit, OnDestroy {
+  @HostBinding('@cardTransition') cardState = 'in';
   reservations: Reservation[] = [];
   customers: Customer[] = [];
   deletedReservations: Reservation[] = [];
   showDeletedReservations = false;
+  areButtonsVisible = false;
+  isEditMode: boolean = false;
+  shouldShowCreationForm = false;
   displayedColumns: string[] = ['reservationDate', 'deposit', 'location', 'customerName', 'customerPhone', 'actions'];
+
 
   constructor(
     private reservationService: ReservationService,
@@ -35,6 +62,15 @@ export class ReservationListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCustomers();
+  }
+
+  ngOnDestroy(): void {
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.areButtonsVisible = true;
+    }, 100);
   }
 
   loadReservations(): void {
@@ -68,6 +104,8 @@ export class ReservationListComponent implements OnInit {
   }
 
   createReservation(): void {
+    this.shouldShowCreationForm = true;
+    this.isEditMode = false;
     this.router.navigate(['/reservations/new']);
   }
 
@@ -96,6 +134,8 @@ export class ReservationListComponent implements OnInit {
   }
 
   editReservation(reservation: Reservation): void {
+    this.isEditMode = true;
+    this.shouldShowCreationForm = false;
     if (!reservation.customer?.id) {
       this.showErrorSnackbar('Error: ID de cliente no definido.');
       return;
@@ -135,7 +175,9 @@ export class ReservationListComponent implements OnInit {
   }
 
   goToHome(): void {
-    this.router.navigate(['']);
+    setTimeout(() => {
+      this.router.navigate(['']);
+    }, 300);
   }
 
   private showSuccessSnackbar(message: string): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReservationService } from '../../services/reservation.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -8,17 +8,30 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { switchMap, take } from 'rxjs';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-reservation-form',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './reservation-form.component.html',
-  styleUrls: ['./reservation-form.component.css']
+  styleUrls: ['./reservation-form.component.css'],
+  animations: [
+    trigger('formTransition', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.5)' }),
+        animate('800ms cubic-bezier(0.25, 0.8, 0.25, 1)', style({ opacity: 1, transform: 'scale(1)' }))
+      ]),
+      transition(':leave', [
+        animate('400ms ease-in', style({ opacity: 0, transform: 'scale(0.5)' }))
+      ])
+    ])
+  ]
 })
-export class ReservationFormComponent implements OnInit {
+export class ReservationFormComponent implements OnInit, OnDestroy {
+  @Input() isEditMode: boolean = false;
+  @HostBinding('@formTransition') formState = 'in';
   reservationForm!: FormGroup;
-  isEditMode = false;
   currentReservationId?: number;
 
   constructor(
@@ -32,6 +45,15 @@ export class ReservationFormComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.checkEditMode();
+
+    if (this.isEditMode) {
+      setTimeout(() => {
+        this.formState = 'in';
+      }, 0);
+    }
+  }
+
+  ngOnDestroy(): void {
   }
 
   initializeForm(): void {
@@ -104,50 +126,50 @@ export class ReservationFormComponent implements OnInit {
   }
 
   createReservation(formValue: any): void {
-  const reservationRequest = {
-    reservationDate: formValue.reservationDate,
-    deposit: formValue.deposit,
-    location: formValue.location,
-    firstName: formValue.firstName,
-    lastName: formValue.lastName,
-    phone: formValue.phone,
-    deleted: false
-  };
+    const reservationRequest = {
+      reservationDate: formValue.reservationDate,
+      deposit: formValue.deposit,
+      location: formValue.location,
+      firstName: formValue.firstName,
+      lastName: formValue.lastName,
+      phone: formValue.phone,
+      deleted: false
+    };
 
-  this.reservationService.createReservation(reservationRequest).subscribe({
-    next: () => {
-      this.router.navigate(['/reservations']);
-      this.showSuccess('Reserva creada correctamente');
-    },
-    error: (error) => {
-      this.showError('Error al crear la reserva: ' + error.message);
-    }
-  });
-}
+    this.reservationService.createReservation(reservationRequest).subscribe({
+      next: () => {
+        this.router.navigate(['/reservations']);
+        this.showSuccess('Reserva creada correctamente');
+      },
+      error: (error) => {
+        this.showError('Error al crear la reserva: ' + error.message);
+      }
+    });
+  }
 
-updateReservation(formValue: any): void {
-  if (!this.currentReservationId) return;
+  updateReservation(formValue: any): void {
+    if (!this.currentReservationId) return;
 
-  const updatedReservationRequest = {
-    reservationDate: formValue.reservationDate,
-    deposit: formValue.deposit,
-    location: formValue.location,
-    firstName: formValue.firstName,
-    lastName: formValue.lastName,
-    phone: formValue.phone,
-    deleted: false,
-  };
+    const updatedReservationRequest = {
+      reservationDate: formValue.reservationDate,
+      deposit: formValue.deposit,
+      location: formValue.location,
+      firstName: formValue.firstName,
+      lastName: formValue.lastName,
+      phone: formValue.phone,
+      deleted: false,
+    };
 
-  this.reservationService.updateReservation(this.currentReservationId, updatedReservationRequest).subscribe({
-    next: () => {
-      this.router.navigate(['/reservations']);
-      this.showSuccess('Reserva actualizada correctamente');
-    },
-    error: (error) => {
-      this.showError('Error al actualizar la reserva: ' + error.message);
-    }
-  });
-}
+    this.reservationService.updateReservation(this.currentReservationId, updatedReservationRequest).subscribe({
+      next: () => {
+        this.router.navigate(['/reservations']);
+        this.showSuccess('Reserva actualizada correctamente');
+      },
+      error: (error) => {
+        this.showError('Error al actualizar la reserva: ' + error.message);
+      }
+    });
+  }
 
   showSuccess(message: string): void {
     this.snackBar.open(message, 'Cerrar', {
@@ -168,7 +190,9 @@ updateReservation(formValue: any): void {
   }
 
   goToHome(): void {
-    this.router.navigate(['']);
+    setTimeout(() => {
+      this.router.navigate(['']);
+    }, 300);
   }
 }
 

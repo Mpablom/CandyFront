@@ -1,13 +1,16 @@
-<div class="title">
-  <h2>Nueva Reserva</h2>
-</div>
-<div class="close-button-container">
-  <button mat-icon-button class="close-button" (click)="goToHome()">
-    <mat-icon>close</mat-icon>
-  </button>
+<div class="headForm" [@formTransition]>
+  <div class="title">
+    <h2>{{ isEditMode ? 'Editar Reserva' : 'Nueva Reserva' }}</h2>
+  </div>
+  <div class="close-button-container">
+    <button mat-icon-button class="close-button" (click)="goToHome()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 </div>
 
-<div class="reservation-form-container">
+
+<div class="reservation-form-container" [@formTransition]>
 
   <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
@@ -49,6 +52,7 @@
       <label for="location">Ubicación:</label>
       <input id="location" formControlName="location" placeholder="Ingrese la ubicación" />
     </div>
-    <button mat-flat-button color="warn" class="button-save" type="submit" [disabled]="reservationForm.invalid">Guardar</button>
+    <button mat-flat-button color="warn" class="button-save" type="submit"
+      [disabled]="reservationForm.invalid">Guardar</button>
   </form>
 </div>

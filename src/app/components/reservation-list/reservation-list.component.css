@@ -86,6 +86,15 @@
 .mobile-only {
   display: none;
 }
+
+.success-snackbar {
+  background-color: #4CAF50;
+}
+
+.error-snackbar {
+  background-color: #F44336;
+}
+
 @media (max-width: 768px) {
   .card-row-group {
     flex-direction: column;

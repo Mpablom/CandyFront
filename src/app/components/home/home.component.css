@@ -8,11 +8,14 @@
 
 .options {
   margin-bottom: 20px;
+  gap: 50px;
   display: flex;
   justify-content: center;
 }
 
-button {
-  margin-right: 20px;
-  margin-top: 20px;
+@media (max-width: 768px) {
+  .options{
+    justify-content: space-evenly;
+  }
 }
+

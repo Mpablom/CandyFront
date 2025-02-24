@@ -1,6 +1,6 @@
 .reservation-form-container {
-  width: 80%;
-  margin: auto 20px;
+  width: 90%;
+  margin: auto ;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -27,7 +27,7 @@
 .close-button-container{
   display: flex;
   justify-content: flex-end;
-  margin-right: 9%;
+  margin-right: 2%;
 }
 
 .form-group {
@@ -69,3 +69,16 @@ div[ngIf] {
   margin-top: 5px;
 }
 
+.success-snackbar {
+  background-color: #4CAF50;
+}
+
+.error-snackbar {
+  background-color: #F44336;
+}
+
+@media (max-width: 768px) {
+  .reservation-form-container{
+    width: 80%;
+  }
+}
