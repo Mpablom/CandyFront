@@ -11,7 +11,6 @@ import { CustomerService } from "../../services/customer.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatCardModule } from '@angular/material/card';
 import { animate, style, transition, trigger } from "@angular/animations";
-import { ReservationFormComponent } from "../reservation-form/reservation-form.component";
 
 
 @Component({
@@ -50,6 +49,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
   areButtonsVisible = false;
   isEditMode: boolean = false;
   shouldShowCreationForm = false;
+  groupedReservations: { month: number; year: number; reservations: Reservation[] }[] = [];
   displayedColumns: string[] = ['reservationDate', 'deposit', 'location', 'customerName', 'customerPhone', 'actions'];
 
 
@@ -78,6 +78,8 @@ export class ReservationListComponent implements OnInit, OnDestroy {
       next: (data: Reservation[]) => {
         this.reservations = data.filter(reservation => !reservation.deleted);
         this.deletedReservations = data.filter(reservation => reservation.deleted);
+
+        this.groupReservationsByMonth();
       },
       error: (error) => {
         console.error('Error loading reservations:', error);
@@ -150,6 +152,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
         if (deletedReservation) {
           this.reservations = this.reservations.filter(reservation => reservation.id !== id);
           this.deletedReservations.push(deletedReservation);
+          this.groupReservationsByMonth();
         }
         this.showSuccessSnackbar('Reserva eliminada correctamente.');
       },
@@ -172,6 +175,56 @@ export class ReservationListComponent implements OnInit, OnDestroy {
         this.showErrorSnackbar('Error al eliminar reservas y clientes pasados.');
       }
     });
+  }
+
+  groupReservationsByMonth(): void {
+    const grouped = this.reservations.reduce((acc, reservation) => {
+      let date: Date;
+
+      if (typeof reservation.reservationDate === 'string' && reservation.reservationDate.includes('-')) {
+        const [year, month, day] = reservation.reservationDate.split('-');
+        date = new Date(+year, +month - 1, +day); // Meses 0-based
+      }
+      else if (typeof reservation.reservationDate === 'string' && reservation.reservationDate.includes('/')) {
+        const [day, month, year] = reservation.reservationDate.split('/');
+        date = new Date(+year, +month - 1, +day); // Meses 0-based
+      }
+      else {
+        date = new Date(reservation.reservationDate);
+      }
+
+      if (isNaN(date.getTime())) {
+        console.error('Fecha inválida:', reservation.reservationDate);
+        return acc;
+      }
+
+      const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const yearGroup = normalizedDate.getFullYear();
+      const monthGroup = normalizedDate.getMonth();
+
+      let group = acc.find(g => g.month === monthGroup && g.year === yearGroup);
+      if (!group) {
+        group = { month: monthGroup, year: yearGroup, reservations: [] };
+        acc.push(group);
+      }
+
+      group.reservations.push(reservation);
+      return acc;
+    }, [] as { month: number; year: number; reservations: Reservation[] }[]);
+
+    this.groupedReservations = grouped.sort((a, b) => {
+      if (a.year !== b.year) return a.year - b.year;
+      return a.month - b.month;
+    });
+  }
+
+  // Añadir manejo de errores en getMonthName
+  getMonthName(month: number): string {
+    const months = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+    return months[month] || 'Mes desconocido'; // Evita "NaN"
   }
 
   goToHome(): void {

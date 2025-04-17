@@ -8,10 +8,11 @@
 
 .close-button {
   background-color: transparent;
-  color: #ae2222;
+  color: red;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-shadow: 5px 5px 5px 5px red;
 }
 
 .close-button:hover {
@@ -32,18 +33,31 @@
   gap: 20px;
   padding: 30px;
   margin: auto;
-
+  background-color: transparent;
 }
 
-.reservation-card {
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+.reservation-card, .month-header{
+  box-shadow: 0px 5px 15px grey;
   border-radius: 10px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.7) ;
 }
-
 .reservation-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 5px 15px grey;
+}
+.month-card{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+.month-header{
+  text-align: center;
+  font-style: oblique;
+  width: max-content;
+  padding: 10px;
 }
 
 .card-row {
