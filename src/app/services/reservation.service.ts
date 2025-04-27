@@ -16,9 +16,21 @@ export class ReservationService {
   getAllReservations(): Observable<Reservation[]> {
     return this.http.get<Reservation[]>(`${this.apiUrl}/reservations`);
   }
+
   createReservation(reservation: ReservationRequestDto): Observable<ReservationResponseDto> {
-    return this.http.post<ReservationResponseDto>(`${this.apiUrl}/reservations`, reservation);
+    const payload = {
+      reservationDate: reservation.reservationDate,
+      deposit: reservation.deposit,
+      deleted: reservation.deleted,
+      location: reservation.location,
+      firstName: reservation.firstName,
+      lastName: reservation.lastName,
+      phone: reservation.phone
+    };
+
+    return this.http.post<ReservationResponseDto>(`${this.apiUrl}/reservations`, payload);
   }
+
   updateReservation(id: number, reservation: ReservationRequestDto): Observable<Reservation> {
     return this.http.put<Reservation>(`${this.apiUrl}/reservations/${id}`, reservation);
   }
@@ -35,7 +47,7 @@ export class ReservationService {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/reservations/past/all`);
   }
   getReservationById(id: number): Observable<ReservationResponseDto> {
-    return this.http.get<ReservationResponseDto>(`${this.apiUrl}reservations/${id}`);
+    return this.http.get<ReservationResponseDto>(`${this.apiUrl}/reservations/${id}`);
   }
   updateReservationWithCustomer(id: number, reservation: ReservationRequestDto, customer: CustomerRequestDto): Observable<Reservation> {
     const payload = { ...reservation, customer };
