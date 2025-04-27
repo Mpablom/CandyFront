@@ -13,32 +13,54 @@ export class ReservationService {
 
   constructor(private http: HttpClient) { }
 
-  getAllReservations(): Observable<Reservation[]> {
-    return this.http.get<Reservation[]>(this.apiUrl);
+  getAllReservations(): Observable<ReservationResponseDto[]> {
+    return this.http.get<ReservationResponseDto[]>(`${this.apiUrl}/reservations`);
   }
+
   createReservation(reservation: ReservationRequestDto): Observable<ReservationResponseDto> {
-    return this.http.post<ReservationResponseDto>(`${this.apiUrl}`, reservation);
+    return this.http.post<ReservationResponseDto>(`${this.apiUrl}/reservations`, reservation);
   }
-  updateReservation(id: number, reservation: ReservationRequestDto): Observable<Reservation> {
-    return this.http.put<Reservation>(`${this.apiUrl}/${id}`, reservation);
+
+  updateReservation(id: number, reservation: ReservationRequestDto): Observable<ReservationResponseDto> {
+    return this.http.put<ReservationResponseDto>(`${this.apiUrl}/reservations/${id}`, reservation);
   }
 
   deleteReservation(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/reservations/${id}`);
   }
 
-  recoverReservation(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/recover/${id}`, {});
+  recoverReservation(id: number): Observable<ReservationResponseDto> {
+    return this.http.put<ReservationResponseDto>(`${this.apiUrl}/reservations/recover/${id}`, {});
   }
 
   deletePastReservationsAndCustomers(): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.apiUrl}/past/all`);
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/reservations/past/all`);
   }
+
   getReservationById(id: number): Observable<ReservationResponseDto> {
-    return this.http.get<ReservationResponseDto>(`${this.apiUrl}/${id}`);
+    return this.http.get<ReservationResponseDto>(`${this.apiUrl}/reservations/${id}`);
   }
-  updateReservationWithCustomer(id: number, reservation: ReservationRequestDto, customer: CustomerRequestDto): Observable<Reservation> {
-    const payload = { ...reservation, customer };
-    return this.http.put<Reservation>(`${this.apiUrl}/${id}/with-customer`, payload);
+
+  getReservationsByDate(date: string): Observable<ReservationResponseDto[]> {
+    return this.http.get<ReservationResponseDto[]>(`${this.apiUrl}/reservations/date/${date}`);
+  }
+
+  updateReservationWithCustomer(id: number, reservation: ReservationRequestDto, customer: CustomerRequestDto): Observable<ReservationResponseDto> {
+    const payload = {
+      ...reservation,
+      customer: customer
+    };
+    return this.http.put<ReservationResponseDto>(
+      `${this.apiUrl}/reservations/${id}/with-customer`,
+      payload
+    );
+  }
+
+  deletePastReservations(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/reservations/past`);
+  }
+
+  deleteCustomersWithPastReservations(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/reservations/past/customers`);
   }
 }
