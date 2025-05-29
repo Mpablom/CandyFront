@@ -1,10 +1,12 @@
-import { Customer, CustomerResponseDto } from "./customer.model";
+import { Customer, CustomerResponseDto } from './customer.model';
 
 export interface Reservation {
   id: number;
   reservationDate: string;
   deposit: number;
   location?: string;
+  description: string;
+  starTime: string;
   customerId: number;
   customer: Customer;
   deleted?: boolean;
@@ -15,6 +17,8 @@ export interface ReservationRequestDto {
   reservationDate: string;
   deposit: number;
   location?: string;
+  description: string;
+  starTime: string;
   firstName: string;
   lastName: string;
   phone: string;
@@ -26,5 +30,7 @@ export interface ReservationResponseDto {
   deposit: number;
   deleted: boolean;
   location?: string;
+  description: string;
+  starTime: string;
   customer: CustomerResponseDto;
 }

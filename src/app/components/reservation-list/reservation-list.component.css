@@ -11,7 +11,7 @@
   color: red;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
   text-shadow: 5px 5px 5px 5px red;
 }
 
@@ -36,24 +36,27 @@
   background-color: transparent;
 }
 
-.reservation-card, .month-header{
+.reservation-card,
+.month-header {
   box-shadow: 0px 5px 15px grey;
   border-radius: 10px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.7) ;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+  background-color: rgba(255, 255, 255, 0.7);
 }
 .reservation-card:hover {
   transform: translateY(-5px);
   box-shadow: 0px 5px 15px grey;
 }
-.month-card{
+.month-card {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   width: 100%;
 }
-.month-header{
+.month-header {
   text-align: center;
   font-style: oblique;
   width: max-content;
@@ -102,11 +105,11 @@
 }
 
 .success-snackbar {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 .error-snackbar {
-  background-color: #F44336;
+  background-color: #f44336;
 }
 
 @media (max-width: 768px) {
@@ -131,6 +134,11 @@
     justify-content: flex-end;
     padding: 0 8px 8px 0;
   }
+  .buttons-container {
+    flex-direction: column;
+    width: 80%;
+    align-items: center;
+  }
 }
 @media (max-width: 480px) {
   .card-row {
@@ -144,4 +152,3 @@
     margin-right: 5px;
   }
 }
-

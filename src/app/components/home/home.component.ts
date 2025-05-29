@@ -10,15 +10,8 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule, MatButtonModule, MatIconModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
-  animations: [
-    trigger('enterAnimation', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(50px)' }),
-        animate('3000ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ]
+  animations: [],
 })
 export class HomeComponent {
-   @HostBinding('@enterAnimation') enterState = true;
+  @HostBinding('@enterAnimation') enterState = true;
 }

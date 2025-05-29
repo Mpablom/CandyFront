@@ -1,5 +1,16 @@
-import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component,
+  HostBinding,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ReservationService } from '../../services/reservation.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ReservationResponseDto } from '../../models/reservation.model';
@@ -20,13 +31,19 @@ import { animate, style, transition, trigger } from '@angular/animations';
     trigger('formTransition', [
       transition(':enter', [
         style({ opacity: 0, transform: 'scale(0.5)' }),
-        animate('800ms cubic-bezier(0.25, 0.8, 0.25, 1)', style({ opacity: 1, transform: 'scale(1)' }))
+        animate(
+          '800ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+          style({ opacity: 1, transform: 'scale(1)' }),
+        ),
       ]),
       transition(':leave', [
-        animate('400ms ease-in', style({ opacity: 0, transform: 'scale(0.5)' }))
-      ])
-    ])
-  ]
+        animate(
+          '400ms ease-in',
+          style({ opacity: 0, transform: 'scale(0.5)' }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class ReservationFormComponent implements OnInit, OnDestroy {
   @Input() isEditMode: boolean = false;
@@ -39,8 +56,8 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
     private reservationService: ReservationService,
     private route: ActivatedRoute,
     private router: Router,
-    private snackBar: MatSnackBar
-  ) { }
+    private snackBar: MatSnackBar,
+  ) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -53,8 +70,7 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-  }
+  ngOnDestroy(): void {}
 
   initializeForm(): void {
     this.reservationForm = this.fb.group({
@@ -64,23 +80,27 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       reservationDate: ['', Validators.required],
       deposit: ['', [Validators.required, Validators.min(0)]],
       location: [''],
-      customerId: ['']
+      description: ['', Validators.required],
+      starTime: [''],
+      customerId: [''],
     });
   }
 
   checkEditMode(): void {
     this.route.params
       .pipe(
-        switchMap(params => {
+        switchMap((params) => {
           if (params['id']) {
             this.isEditMode = true;
             this.currentReservationId = +params['id'];
-            return this.reservationService.getReservationById(this.currentReservationId);
+            return this.reservationService.getReservationById(
+              this.currentReservationId,
+            );
           } else {
             return [null];
           }
         }),
-        take(1)
+        take(1),
       )
       .subscribe({
         next: (reservation) => {
@@ -90,12 +110,14 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.showError('Error cargando la reserva: ' + error.message);
-        }
+        },
       });
   }
 
   loadReservation(reservation: ReservationResponseDto): void {
-    const formattedDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
+    const formattedDate = new Date(reservation.reservationDate)
+      .toISOString()
+      .split('T')[0];
     this.reservationForm.patchValue({
       firstName: reservation.customer.firstName,
       lastName: reservation.customer.lastName,
@@ -103,7 +125,9 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       reservationDate: formattedDate,
       deposit: reservation.deposit,
       location: reservation.location,
-      customerId: reservation.customer.id
+      description: reservation.description,
+      starTime: reservation.starTime,
+      customerId: reservation.customer.id,
     });
   }
 
@@ -130,10 +154,12 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       reservationDate: formValue.reservationDate,
       deposit: formValue.deposit,
       location: formValue.location,
+      description: formValue.description,
+      starTime: formValue.starTime,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
       phone: formValue.phone,
-      deleted: false
+      deleted: false,
     };
 
     this.reservationService.createReservation(reservationRequest).subscribe({
@@ -143,7 +169,7 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.showError('Error al crear la reserva: ' + error.message);
-      }
+      },
     });
   }
 
@@ -154,34 +180,38 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       reservationDate: formValue.reservationDate,
       deposit: formValue.deposit,
       location: formValue.location,
+      description: formValue.description,
+      starTime: formValue.starTime,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
       phone: formValue.phone,
       deleted: false,
     };
 
-    this.reservationService.updateReservation(this.currentReservationId, updatedReservationRequest).subscribe({
-      next: () => {
-        this.router.navigate(['/reservations']);
-        this.showSuccess('Reserva actualizada correctamente');
-      },
-      error: (error) => {
-        this.showError('Error al actualizar la reserva: ' + error.message);
-      }
-    });
+    this.reservationService
+      .updateReservation(this.currentReservationId, updatedReservationRequest)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/reservations']);
+          this.showSuccess('Reserva actualizada correctamente');
+        },
+        error: (error) => {
+          this.showError('Error al actualizar la reserva: ' + error.message);
+        },
+      });
   }
 
   showSuccess(message: string): void {
     this.snackBar.open(message, 'Cerrar', {
       duration: 5000,
-      panelClass: ['success-snackbar']
+      panelClass: ['success-snackbar'],
     });
   }
 
   showError(message: string): void {
     this.snackBar.open(message, 'Cerrar', {
       duration: 5000,
-      panelClass: ['error-snackbar']
+      panelClass: ['error-snackbar'],
     });
   }
 
@@ -195,4 +225,3 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
     }, 300);
   }
 }
-

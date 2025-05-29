@@ -1,6 +1,6 @@
 <div class="headForm" [@formTransition]>
   <div class="title">
-    <h2>{{ isEditMode ? 'Editar Reserva' : 'Nueva Reserva' }}</h2>
+    <h2>{{ isEditMode ? "Editar Reserva" : "Nueva Reserva" }}</h2>
   </div>
   <div class="close-button-container">
     <button mat-icon-button class="close-button" (click)="goToHome()">
@@ -9,50 +9,134 @@
   </div>
 </div>
 
-
 <div class="reservation-form-container" [@formTransition]>
-
   <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
       <label for="firstName">Nombre</label>
-      <input id="firstName" formControlName="firstName" type="text" placeholder="Nombre">
-      <div *ngIf="reservationForm.get('firstName')?.invalid && reservationForm.get('firstName')?.touched">
+      <input
+        id="firstName"
+        formControlName="firstName"
+        type="text"
+        placeholder="Nombre"
+      />
+      <div
+        *ngIf="
+          reservationForm.get('firstName')?.invalid &&
+          reservationForm.get('firstName')?.touched
+        "
+      >
         El nombre es requerido.
       </div>
     </div>
     <div class="form-group">
       <label for="lastName">Apellido</label>
-      <input id="lastName" formControlName="lastName" type="text" placeholder="Apellido">
-      <div *ngIf="reservationForm.get('lastName')?.invalid && reservationForm.get('lastName')?.touched">
+      <input
+        id="lastName"
+        formControlName="lastName"
+        type="text"
+        placeholder="Apellido"
+      />
+      <div
+        *ngIf="
+          reservationForm.get('lastName')?.invalid &&
+          reservationForm.get('lastName')?.touched
+        "
+      >
         El apellido es requerido.
       </div>
     </div>
     <div class="form-group">
       <label for="phone">Teléfono</label>
-      <input id="phone" formControlName="phone" type="text" placeholder="Teléfono">
-      <div *ngIf="reservationForm.get('phone')?.invalid && reservationForm.get('phone')?.touched">
+      <input
+        id="phone"
+        formControlName="phone"
+        type="text"
+        placeholder="Teléfono"
+      />
+      <div
+        *ngIf="
+          reservationForm.get('phone')?.invalid &&
+          reservationForm.get('phone')?.touched
+        "
+      >
         El teléfono es requerido y debe tener 10 dígitos.
       </div>
     </div>
     <div class="form-group">
       <label for="reservationDate">Fecha de Reserva</label>
-      <input id="reservationDate" formControlName="reservationDate" type="date">
-      <div *ngIf="reservationForm.get('reservationDate')?.invalid && reservationForm.get('reservationDate')?.touched">
+      <input
+        id="reservationDate"
+        formControlName="reservationDate"
+        type="date"
+      />
+      <div
+        *ngIf="
+          reservationForm.get('reservationDate')?.invalid &&
+          reservationForm.get('reservationDate')?.touched
+        "
+      >
         La fecha de reserva es requerida.
       </div>
     </div>
     <div class="form-group">
+      <label for="starTime">Hora de inicio</label>
+      <input
+        id="starTime"
+        formControlName="starTime"
+        type="text"
+        placeholder="Hora de inicio"
+      />
+    </div>
+    <div class="form-group">
       <label for="deposit">Depósito</label>
-      <input id="deposit" formControlName="deposit" type="number" placeholder="Depósito">
-      <div *ngIf="reservationForm.get('deposit')?.invalid && reservationForm.get('deposit')?.touched">
+      <input
+        id="deposit"
+        formControlName="deposit"
+        type="number"
+        placeholder="Depósito"
+      />
+      <div
+        *ngIf="
+          reservationForm.get('deposit')?.invalid &&
+          reservationForm.get('deposit')?.touched
+        "
+      >
         El depósito es requerido y debe ser un número positivo.
       </div>
     </div>
     <div class="form-group">
-      <label for="location">Ubicación:</label>
-      <input id="location" formControlName="location" placeholder="Ingrese la ubicación" />
+      <label for="description">Descripción</label>
+      <input
+        id="description"
+        formControlName="description"
+        type="text"
+        placeholder="Elementos alquilados"
+      />
+      <div
+        *ngIf="
+          reservationForm.get('description')?.invalid &&
+          reservationForm.get('description')?.touched
+        "
+      >
+        La Descripción es requerida para saber disponibilidad.
+      </div>
     </div>
-    <button mat-flat-button color="warn" class="button-save" type="submit"
-      [disabled]="reservationForm.invalid">Guardar</button>
+    <div class="form-group">
+      <label for="location">Ubicación:</label>
+      <input
+        id="location"
+        formControlName="location"
+        placeholder="Ingrese la ubicación"
+      />
+    </div>
+    <button
+      mat-flat-button
+      color="warn"
+      class="button-save"
+      type="submit"
+      [disabled]="reservationForm.invalid"
+    >
+      Guardar
+    </button>
   </form>
 </div>

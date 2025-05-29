@@ -1,5 +1,5 @@
 <div class="headList" [@cardTransition]>
-  <div class="title" >
+  <div class="title">
     <h2>Reservas</h2>
   </div>
   <div class="close-button-container">
@@ -9,96 +9,180 @@
   </div>
 </div>
 
- <div *ngFor="let group of groupedReservations" class="month-card">
-    <mat-card class="month-header">
-      <mat-card-title class="card-label"> {{ getMonthName(group.month) }} {{ group.year }}</mat-card-title>
-    </mat-card>
-  <!-- Contenedor de tarjetas para reservas activas -->
-    <div class="cards-container">
-     <mat-card *ngFor="let reservation of group.reservations" class="reservation-card"  [@cardTransition]>
+<div *ngFor="let group of groupedReservations" class="month-card">
+  <mat-card class="month-header">
+    <mat-card-title class="card-label">
+      {{ getMonthName(group.month) }} {{ group.year }}</mat-card-title
+    >
+  </mat-card>
+  <div class="cards-container">
+    <mat-card
+      *ngFor="let reservation of group.reservations"
+      class="reservation-card"
+      [@cardTransition]
+    >
       <mat-card-content>
         <div class="card-row-group">
           <div class="card-row">
             <span class="card-label">Fecha</span>
-            <span class="card-value">{{ reservation.reservationDate | date:'dd/MM/yyyy' }}</span>
+            <span class="card-value">{{
+              reservation.reservationDate | date: "dd/MM/yyyy"
+            }}</span>
+          </div>
+          <div class="card-row">
+            <span class="card-label">Hora de Inicio</span>
+            <span class="card-value">{{
+              reservation.starTime || "No especificada"
+            }}</span>
           </div>
           <div class="card-row">
             <span class="card-label">Depósito</span>
             <span class="card-value">{{ reservation.deposit | currency }}</span>
           </div>
           <div class="card-row">
+            <span class="card-label">Descripción</span>
+            <span class="card-value">{{
+              reservation.description | currency
+            }}</span>
+          </div>
+          <div class="card-row">
             <span class="card-label">Nombre</span>
-            <span class="card-value">{{ getCustomerName(reservation.customer.id!) }}</span>
+            <span class="card-value">{{
+              getCustomerName(reservation.customer.id!)
+            }}</span>
           </div>
           <div class="card-row">
             <span class="card-label">Ubicación</span>
-            <span class="card-value">{{ reservation.location || 'No especificada' }}</span>
+            <span class="card-value">{{
+              reservation.location || "No especificada"
+            }}</span>
           </div>
           <div class="card-row">
             <span class="card-label">Teléfono</span>
-            <span class="card-value">{{ getCustomerPhone(reservation.customer.id!) }}</span>
+            <span class="card-value">{{
+              getCustomerPhone(reservation.customer.id!)
+            }}</span>
           </div>
         </div>
       </mat-card-content>
       <mat-card-actions class="actions-container">
-        <button mat-flat-button color="primary" class="desktop-only"
-          (click)="editReservation(reservation)">Editar</button>
-        <button mat-flat-button color="warn" class="desktop-only"
-          (click)="deleteReservation(reservation.id)">Eliminar</button>
-        <button mat-icon-button color="primary" class="mobile-only" (click)="editReservation(reservation)">
-        <mat-icon>edit</mat-icon>
+        <button
+          mat-flat-button
+          color="primary"
+          class="desktop-only"
+          (click)="editReservation(reservation)"
+        >
+          Editar
         </button>
-        <button mat-icon-button color="warn" class="mobile-only" (click)="deleteReservation(reservation.id)">
+        <button
+          mat-flat-button
+          color="warn"
+          class="desktop-only"
+          (click)="deleteReservation(reservation.id)"
+        >
+          Eliminar
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          class="mobile-only"
+          (click)="editReservation(reservation)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="warn"
+          class="mobile-only"
+          (click)="deleteReservation(reservation.id)"
+        >
           <mat-icon>delete</mat-icon>
         </button>
       </mat-card-actions>
-     </mat-card>
-    </div>
+    </mat-card>
+  </div>
 </div>
 
 <!-- Botones adicionales -->
-<div class="buttons-container"  *ngIf="areButtonsVisible" [@buttonsTransition]>
+<div class="buttons-container" *ngIf="areButtonsVisible" [@buttonsTransition]>
   <div class="restore-button-container">
-    <button mat-flat-button color="primary" (click)="toggleDeletedReservations()">
-      {{ showDeletedReservations ? 'Ocultar Reservas Eliminadas' : 'Mostrar Reservas Eliminadas' }}
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="toggleDeletedReservations()"
+    >
+      {{
+        showDeletedReservations
+          ? "Ocultar Reservas Eliminadas"
+          : "Mostrar Reservas Eliminadas"
+      }}
     </button>
   </div>
   <div class="delete-past-button-container">
-    <button mat-flat-button color="primary" (click)="deletePastReservationsAndCustomers()">
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="deletePastReservationsAndCustomers()"
+    >
       Eliminar Reservas Pasadas y Clientes Asociados
     </button>
   </div>
 </div>
 
-
 <!-- Contenedor de tarjetas para reservas eliminadas -->
-<div *ngIf="showDeletedReservations" class="cards-container"  [@cardTransition]>
-  <mat-card *ngFor="let reservation of deletedReservations" class="reservation-card">
+<div *ngIf="showDeletedReservations" class="cards-container" [@cardTransition]>
+  <mat-card
+    *ngFor="let reservation of deletedReservations"
+    class="reservation-card"
+  >
     <mat-card-content>
       <div class="card-row">
         <span class="card-label">Fecha</span>
-        <span class="card-value">{{ reservation.reservationDate | date:'dd/MM/yyyy' }}</span>
+        <span class="card-value">{{
+          reservation.reservationDate | date: "dd/MM/yyyy"
+        }}</span>
+      </div>
+      <div class="card-row">
+        <span class="card-label">Hora de Inicio</span>
+        <span class="card-value">{{
+          reservation.starTime || "No especificada"
+        }}</span>
       </div>
       <div class="card-row">
         <span class="card-label">Depósito</span>
         <span class="card-value">{{ reservation.deposit | currency }}</span>
       </div>
       <div class="card-row">
+        <span class="card-label">Descripción</span>
+        <span class="card-value">{{ reservation.description | currency }}</span>
+      </div>
+      <div class="card-row">
         <span class="card-label">Nombre</span>
-        <span class="card-value">{{ getCustomerName(reservation.customer.id!) }}</span>
+        <span class="card-value">{{
+          getCustomerName(reservation.customer.id!)
+        }}</span>
       </div>
       <div class="card-row">
         <span class="card-label">Ubicación</span>
-        <span class="card-value">{{ reservation.location || 'No especificada' }}</span>
+        <span class="card-value">{{
+          reservation.location || "No especificada"
+        }}</span>
       </div>
       <div class="card-row">
         <span class="card-label">Teléfono</span>
-        <span class="card-value">{{ getCustomerPhone(reservation.customer.id!) }}</span>
+        <span class="card-value">{{
+          getCustomerPhone(reservation.customer.id!)
+        }}</span>
       </div>
     </mat-card-content>
     <mat-card-actions class="actions-container">
-      <button mat-flat-button color="primary" (click)="recoverReservation(reservation.id)">Recuperar</button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="recoverReservation(reservation.id)"
+      >
+        Recuperar
+      </button>
     </mat-card-actions>
   </mat-card>
 </div>
-
