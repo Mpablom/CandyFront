@@ -42,7 +42,7 @@ export class ReservationService {
       deleted: reservation.deleted,
       location: reservation.location,
       description: reservation.description,
-      starTime: reservation.starTime,
+      starTime: reservation.startTime,
       firstName: reservation.firstName,
       lastName: reservation.lastName,
       phone: reservation.phone,

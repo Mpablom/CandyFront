@@ -81,7 +81,7 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       deposit: ['', [Validators.required, Validators.min(0)]],
       location: [''],
       description: ['', Validators.required],
-      starTime: [''],
+      startTime: [''],
       customerId: [''],
     });
   }
@@ -126,7 +126,7 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       deposit: reservation.deposit,
       location: reservation.location,
       description: reservation.description,
-      starTime: reservation.starTime,
+      startTime: reservation.startTime,
       customerId: reservation.customer.id,
     });
   }
@@ -155,7 +155,7 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       deposit: formValue.deposit,
       location: formValue.location,
       description: formValue.description,
-      starTime: formValue.starTime,
+      startTime: formValue.starTime,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
       phone: formValue.phone,
@@ -181,7 +181,7 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       deposit: formValue.deposit,
       location: formValue.location,
       description: formValue.description,
-      starTime: formValue.starTime,
+      startTime: formValue.starTime,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
       phone: formValue.phone,

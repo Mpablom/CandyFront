@@ -6,7 +6,7 @@ export interface Reservation {
   deposit: number;
   location?: string;
   description: string;
-  starTime: string;
+  startTime: string;
   customerId: number;
   customer: Customer;
   deleted?: boolean;
@@ -18,7 +18,7 @@ export interface ReservationRequestDto {
   deposit: number;
   location?: string;
   description: string;
-  starTime: string;
+  startTime: string;
   firstName: string;
   lastName: string;
   phone: string;
@@ -31,6 +31,6 @@ export interface ReservationResponseDto {
   deleted: boolean;
   location?: string;
   description: string;
-  starTime: string;
+  startTime: string;
   customer: CustomerResponseDto;
 }

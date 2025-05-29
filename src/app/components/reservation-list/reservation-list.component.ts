@@ -79,7 +79,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
   }[] = [];
   displayedColumns: string[] = [
     'reservationDate',
-    'starTime',
+    'startTime',
     'deposit',
     'description',
     'location',
