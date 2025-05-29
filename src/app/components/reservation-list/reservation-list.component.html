@@ -154,7 +154,9 @@
       </div>
       <div class="card-row">
         <span class="card-label">Descripción</span>
-        <span class="card-value">{{ reservation.description | currency }}</span>
+        <span class="card-value">{{
+          reservation.description || "sin descripción"
+        }}</span>
       </div>
       <div class="card-row">
         <span class="card-label">Nombre</span>
