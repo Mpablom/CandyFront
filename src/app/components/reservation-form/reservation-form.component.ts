@@ -181,7 +181,7 @@ export class ReservationFormComponent implements OnInit, OnDestroy {
       deposit: formValue.deposit,
       location: formValue.location,
       description: formValue.description,
-      startTime: formValue.starTime,
+      startTime: formValue.startTime,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
       phone: formValue.phone,
